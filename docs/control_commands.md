@@ -21,6 +21,7 @@ These commands
 |--------------|---------------------|--------|
 | 0x01 | Mic Mode | Single value (1 byte) |
 | 0x05 | Button Send Mode | Single value (1 byte) |
+| 0x06 | Has ownership | Single value (1 byte): `0x01` = own, `0x00` = doesn't own |
 | 0x12 | VoiceTrigger for Siri | Single Value (1 byte): `0x01` = enabled, `0x01` = disabled |
 | 0x14 | SingleClickMode | Single value (1 byte) |
 | 0x15 | DoubleClickMode | Single value (1 byte) |
