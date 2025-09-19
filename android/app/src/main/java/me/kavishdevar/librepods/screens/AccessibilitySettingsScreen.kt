@@ -36,7 +36,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -49,6 +51,7 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Slider
+import androidx.compose.material3.SliderDefaults
 import androidx.compose.material3.SnackbarHost
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -67,6 +70,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.draw.rotate
 import androidx.compose.ui.draw.scale
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.geometry.Offset
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.input.pointer.pointerInput
@@ -120,6 +124,11 @@ fun AccessibilitySettingsScreen() {
     val attManager = ATTManager(ServiceManager.getService()?.device?: throw IllegalStateException("No device connected"))
     // get the AACP manager if available (used for EQ read/write)
     val aacpManager = remember { ServiceManager.getService()?.aacpManager }
+
+    val trackColor = if (isDarkTheme) Color(0xFFB3B3B3) else Color(0xFF929491)
+    val activeTrackColor = if (isDarkTheme) Color(0xFF007AFF) else Color(0xFF3C6DF5)
+    val thumbColor = if (isDarkTheme) Color(0xFFFFFFFF) else Color(0xFFFFFFFF)
+    val labelTextColor = if (isDarkTheme) Color.White else Color.Black
 
     DisposableEffect(attManager) {
         onDispose {
@@ -621,7 +630,7 @@ fun AccessibilitySettingsScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(32.dp)
+                            .height(38.dp)
                     ) {
                         Text(
                             text = String.format("%.2f", eqValue.floatValue),
@@ -641,6 +650,42 @@ fun AccessibilitySettingsScreen() {
                             valueRange = 0f..100f,
                             modifier = Modifier
                                 .fillMaxWidth(0.9f)
+                                .height(36.dp),
+                            colors = SliderDefaults.colors(
+                                thumbColor = thumbColor,
+                                activeTrackColor = activeTrackColor,
+                                inactiveTrackColor = trackColor
+                            ),
+                            thumb = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .shadow(4.dp, CircleShape)
+                                        .background(thumbColor, CircleShape)
+                                )
+                            },
+                            track = {
+                                Box (
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(12.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                )
+                                {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(4.dp)
+                                            .background(trackColor, RoundedCornerShape(4.dp))
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(eqValue.floatValue / 100f)
+                                            .height(4.dp)
+                                            .background(activeTrackColor, RoundedCornerShape(4.dp))
+                                    )
+                                }
+                            }
                         )
 
                         Text(
@@ -782,7 +827,7 @@ fun AccessibilitySettingsScreen() {
                         verticalAlignment = Alignment.CenterVertically,
                         modifier = Modifier
                             .fillMaxWidth()
-                            .height(32.dp)
+                            .height(38.dp)
                     ) {
                         Text(
                             text = String.format("%.2f", eqPhoneValue.floatValue),
@@ -802,6 +847,42 @@ fun AccessibilitySettingsScreen() {
                             valueRange = 0f..100f,
                             modifier = Modifier
                                 .fillMaxWidth(0.9f)
+                                .height(36.dp),
+                            colors = SliderDefaults.colors(
+                                thumbColor = thumbColor,
+                                activeTrackColor = activeTrackColor,
+                                inactiveTrackColor = trackColor
+                            ),
+                            thumb = {
+                                Box(
+                                    modifier = Modifier
+                                        .size(24.dp)
+                                        .shadow(4.dp, CircleShape)
+                                        .background(thumbColor, CircleShape)
+                                )
+                            },
+                            track = {
+                                Box (
+                                    modifier = Modifier
+                                        .fillMaxWidth()
+                                        .height(12.dp),
+                                    contentAlignment = Alignment.CenterStart
+                                )
+                                {
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth()
+                                            .height(4.dp)
+                                            .background(trackColor, RoundedCornerShape(4.dp))
+                                    )
+                                    Box(
+                                        modifier = Modifier
+                                            .fillMaxWidth(eqPhoneValue.floatValue / 100f)
+                                            .height(4.dp)
+                                            .background(activeTrackColor, RoundedCornerShape(4.dp))
+                                    )
+                                }
+                            }
                         )
 
                         Text(
