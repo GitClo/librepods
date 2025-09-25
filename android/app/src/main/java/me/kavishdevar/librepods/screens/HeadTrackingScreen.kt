@@ -153,6 +153,7 @@ fun HeadTrackingScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .padding(top = 8.dp)
+                .padding(horizontal = 16.dp)
                 .verticalScroll(scrollState)
                 .hazeSource(state = hazeState)
         ) {

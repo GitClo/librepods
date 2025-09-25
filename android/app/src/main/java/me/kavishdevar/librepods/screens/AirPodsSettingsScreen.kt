@@ -215,6 +215,7 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
                 modifier = Modifier
                     .fillMaxSize()
                     .hazeSource(hazeState)
+                    .padding(horizontal = 16.dp)
                     .verticalScroll(rememberScrollState())
             ) {
                 Spacer(modifier = Modifier.height(spacerHeight))

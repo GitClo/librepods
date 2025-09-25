@@ -94,6 +94,7 @@ fun RenameScreen(navController: NavController) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
+                .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))
             val isDarkTheme = isSystemInDarkTheme()

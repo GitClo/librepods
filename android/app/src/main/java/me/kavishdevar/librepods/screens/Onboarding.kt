@@ -167,7 +167,8 @@ fun Onboarding(navController: NavController, activityContext: Context) {
     ) { spacerHeight ->
         Column(
             modifier = Modifier
-                .fillMaxSize(),
+                .fillMaxSize()
+                .padding(horizontal = 16.dp),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {

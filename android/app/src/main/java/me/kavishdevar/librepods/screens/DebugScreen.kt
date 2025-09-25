@@ -353,6 +353,7 @@ fun DebugScreen(navController: NavController) {
                 .fillMaxSize()
                 .hazeSource(hazeState)
                 .navigationBarsPadding()
+                .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))
             LazyColumn(

@@ -211,6 +211,7 @@ fun AppSettingsScreen(navController: NavController) {
                 .fillMaxSize()
                 .verticalScroll(scrollState)
                 .hazeSource(state = hazeState)
+                .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))
 

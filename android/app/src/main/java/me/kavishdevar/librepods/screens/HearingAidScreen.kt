@@ -128,7 +128,8 @@ fun HearingAidScreen(navController: NavController) {
                 .layerBackdrop(backdrop)
                 .hazeSource(hazeState)
                 .fillMaxSize()
-                .verticalScroll(verticalScrollState),
+                .verticalScroll(verticalScrollState)
+                .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))

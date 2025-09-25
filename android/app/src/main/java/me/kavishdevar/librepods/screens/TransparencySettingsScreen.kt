@@ -108,7 +108,8 @@ fun TransparencySettingsScreen(navController: NavController) {
             modifier = Modifier
                 .hazeSource(hazeState)
                 .fillMaxSize()
-                .verticalScroll(verticalScrollState),
+                .verticalScroll(verticalScrollState)
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))

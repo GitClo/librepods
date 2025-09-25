@@ -116,12 +116,7 @@ fun StyledScaffold(
                 }
             }
 
-            Box(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-            ) {
-                content(topPadding + 64.dp, hazeState)
-            }
+            content(topPadding + 64.dp, hazeState)
         }
     }
 }

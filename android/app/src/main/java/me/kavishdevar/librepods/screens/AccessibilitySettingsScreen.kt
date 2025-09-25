@@ -164,7 +164,8 @@ fun AccessibilitySettingsScreen(navController: NavController) {
             modifier = Modifier
                 .fillMaxSize()
                 .hazeSource(hazeState)
-                .verticalScroll(rememberScrollState()),
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))

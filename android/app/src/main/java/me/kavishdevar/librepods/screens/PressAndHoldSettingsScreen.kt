@@ -132,6 +132,7 @@ fun LongPress(navController: NavController, name: String) {
           modifier = Modifier
               .fillMaxSize()
               .padding(top = 8.dp)
+              .padding(horizontal = 16.dp)
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))
             Column(
