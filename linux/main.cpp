@@ -951,6 +951,7 @@ int main(int argc, char *argv[]) {
             LOG_DEBUG("Socket error: " << socket.errorString());
         }
     }
+    app.setDesktopFileName("me.kavishdevar.librepods");
     app.setQuitOnLastWindowClosed(false);
 
     bool debugMode = false;

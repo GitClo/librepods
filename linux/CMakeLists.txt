@@ -75,3 +75,5 @@ install(TARGETS librepods
     LIBRARY DESTINATION ${CMAKE_INSTALL_LIBDIR}
     RUNTIME DESTINATION ${CMAKE_INSTALL_BINDIR}
 )
+install(FILES assets/me.kavishdevar.librepods.desktop
+    DESTINATION "${CMAKE_INSTALL_DATAROOTDIR}/applications")
