@@ -273,10 +273,10 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
-                NavigationButton(to = "head_tracking", stringResource(R.string.head_gestures), navController)
+                NavigationButton(to = "head_tracking", name = stringResource(R.string.head_gestures), navController = navController, currentState = if (sharedPreferences.getBoolean("head_gestures", false)) stringResource(R.string.on) else stringResource(R.string.off))
 
                 Spacer(modifier = Modifier.height(16.dp))
-                NavigationButton(to = "accessibility", "Accessibility", navController = navController)
+                NavigationButton(to = "accessibility", name = stringResource(R.string.accessibility), navController = navController)
 
                 Spacer(modifier = Modifier.height(16.dp))
                 StyledToggle(

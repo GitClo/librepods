@@ -173,4 +173,5 @@
     <string name="error_converting_hex">Error converting hex:</string>
     <string name="found_offset_restart_bluetooth">Found offset please restart the Bluetooth process</string>
     <string name="digital_assistant">Digital Assistant</string>
+    <string name="on">On</string>
 </resources>
