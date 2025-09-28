@@ -38,9 +38,8 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Text
@@ -212,84 +211,93 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
         snackbarHostState = snackbarHostState
     ) { spacerHeight, hazeState ->
         if (isLocallyConnected || isRemotelyConnected) {
-            Column(
+            LazyColumn(
                 modifier = Modifier
                     .fillMaxSize()
                     .hazeSource(hazeState)
                     .padding(horizontal = 16.dp)
                     .layerBackdrop(backdrop)
-                    .verticalScroll(rememberScrollState())
             ) {
-                Spacer(modifier = Modifier.height(spacerHeight))
-                LaunchedEffect(service) {
-                    service.let {
-                        it.sendBroadcast(Intent(AirPodsNotifications.BATTERY_DATA).apply {
-                            putParcelableArrayListExtra("data", ArrayList(it.getBattery()))
-                        })
-                        it.sendBroadcast(Intent(AirPodsNotifications.ANC_DATA).apply {
-                            putExtra("data", it.getANC())
-                        })
+                item { Spacer(modifier = Modifier.height(spacerHeight)) }
+                item {
+                    LaunchedEffect(service) {
+                        service.let {
+                            it.sendBroadcast(Intent(AirPodsNotifications.BATTERY_DATA).apply {
+                                putParcelableArrayListExtra("data", ArrayList(it.getBattery()))
+                            })
+                            it.sendBroadcast(Intent(AirPodsNotifications.ANC_DATA).apply {
+                                putExtra("data", it.getANC())
+                            })
+                        }
                     }
+
+                    BatteryView(service = service)
+                }
+                item { Spacer(modifier = Modifier.height(32.dp)) }
+
+                item {
+                    NavigationButton(
+                        to = "rename",
+                        name = stringResource(R.string.name),
+                        currentState = deviceName.text,
+                        navController = navController,
+                        independent = true
+                    )
                 }
 
-                BatteryView(service = service)
-                Spacer(modifier = Modifier.height(32.dp))
+                item { Spacer(modifier = Modifier.height(32.dp)) }
+                item { NavigationButton(to = "hearing_aid", stringResource(R.string.hearing_aid), navController) }
 
-                NavigationButton(
-                    to = "rename",
-                    name = stringResource(R.string.name),
-                    currentState = deviceName.text,
-                    navController = navController,
-                    independent = true
-                )
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { NoiseControlSettings(service = service) }
 
-                Spacer(modifier = Modifier.height(32.dp))
-                NavigationButton(to = "hearing_aid", stringResource(R.string.hearing_aid), navController)
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { PressAndHoldSettings(navController = navController) }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                NoiseControlSettings(service = service)
-
-                Spacer(modifier = Modifier.height(16.dp))
-                PressAndHoldSettings(navController = navController)
-
-                Spacer(modifier = Modifier.height(16.dp))
-                CallControlSettings(hazeState = hazeState)
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { CallControlSettings(hazeState = hazeState) }
 
                 // camera control goes here, airpods side is done, i just need to figure out how to listen to app open/close events
 
-                Spacer(modifier = Modifier.height(16.dp))
-                AudioSettings(navController = navController)
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { AudioSettings(navController = navController) }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                ConnectionSettings()
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { ConnectionSettings() }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                MicrophoneSettings(hazeState)
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { MicrophoneSettings(hazeState) }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                StyledToggle(
-                    label = stringResource(R.string.sleep_detection),
-                    controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.SLEEP_DETECTION_CONFIG
-                )
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item {
+                    StyledToggle(
+                        label = stringResource(R.string.sleep_detection),
+                        controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.SLEEP_DETECTION_CONFIG
+                    )
+                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                NavigationButton(to = "head_tracking", name = stringResource(R.string.head_gestures), navController = navController, currentState = if (sharedPreferences.getBoolean("head_gestures", false)) stringResource(R.string.on) else stringResource(R.string.off))
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item {
+                    NavigationButton(to = "head_tracking", name = stringResource(R.string.head_gestures), navController = navController, currentState = if (sharedPreferences.getBoolean("head_gestures", false)) stringResource(R.string.on) else stringResource(R.string.off))
+                }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                NavigationButton(to = "accessibility", name = stringResource(R.string.accessibility), navController = navController)
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { NavigationButton(to = "accessibility", name = stringResource(R.string.accessibility), navController = navController) }
 
-                Spacer(modifier = Modifier.height(16.dp))
-                StyledToggle(
-                    label = stringResource(R.string.off_listening_mode),
-                    controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.ALLOW_OFF_OPTION,
-                    description = stringResource(R.string.off_listening_mode_description)
-                )
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item {
+                    StyledToggle(
+                        label = stringResource(R.string.off_listening_mode),
+                        controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.ALLOW_OFF_OPTION,
+                        description = stringResource(R.string.off_listening_mode_description)
+                    )
+                }
 
                 // an about card- everything but the version number is unknown - will add later if i find out
 
-                Spacer(modifier = Modifier.height(16.dp))
-                NavigationButton("debug", "Debug", navController)
-                Spacer(Modifier.height(24.dp))
+                item { Spacer(modifier = Modifier.height(16.dp)) }
+                item { NavigationButton("debug", "Debug", navController) }
+                item { Spacer(Modifier.height(24.dp)) }
             }
         }
         else {
