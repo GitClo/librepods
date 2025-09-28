@@ -43,8 +43,6 @@ import androidx.compose.animation.core.animateFloat
 import androidx.compose.animation.core.infiniteRepeatable
 import androidx.compose.animation.core.rememberInfiniteTransition
 import androidx.compose.animation.core.tween
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
 import androidx.compose.animation.slideInHorizontally
 import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.Canvas
@@ -325,25 +323,25 @@ fun Main() {
                     slideInHorizontally(
                         initialOffsetX = { it },
                         animationSpec = tween(durationMillis = 300)
-                    ) + fadeIn(animationSpec = tween(durationMillis = 300))
+                    ) // + fadeIn(animationSpec = tween(durationMillis = 300))
                 },
                 exitTransition = {
                     slideOutHorizontally(
                         targetOffsetX = { -it/4 },
                         animationSpec = tween(durationMillis = 300)
-                    ) + fadeOut(animationSpec = tween(durationMillis = 150))
+                    ) // + fadeOut(animationSpec = tween(durationMillis = 150))
                 },
                 popEnterTransition = {
                     slideInHorizontally(
                         initialOffsetX = { -it/4 },
                         animationSpec = tween(durationMillis = 300)
-                    ) + fadeIn(animationSpec = tween(durationMillis = 300))
+                    ) // + fadeIn(animationSpec = tween(durationMillis = 300))
                 },
                 popExitTransition = {
                     slideOutHorizontally(
                         targetOffsetX = { it },
                         animationSpec = tween(durationMillis = 300)
-                    ) + fadeOut(animationSpec = tween(durationMillis = 150))
+                    ) // + fadeOut(animationSpec = tween(durationMillis = 150))
                 }
             ) {
                 composable("settings") {
