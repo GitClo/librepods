@@ -177,6 +177,11 @@
     <string name="camera_remote">Camera Remote</string>
     <string name="camera_control">Camera Control</string>
     <string name="camera_control_description">Capture a photo, start or stop recording, and more using either Press Once or Press and Hold. When using AirPods for camera actions, if you select Press Once, media control gestures will be unavailable, and if you select Press and Hold, listening mode and Digital Assistant gestures will be unavailable.</string>
+    <string name="camera_control_app_description">Set a custom app package for camera detection</string>
+    <string name="set_custom_camera_package">Set Custom Camera appid</string>
+    <string name="enter_custom_camera_package">Enter the application id of the camera app:</string>
+    <string name="custom_camera_package">Custom Camera appid</string>
+    <string name="custom_camera_package_set_success">Custom camera appid set successfully</string>
     <string name="app_listener_service_label">Camera listener</string>
     <string name="app_listener_service_description">Listener service for LibrePods to detect when the camera is active to activate camera control on AirPods.</string>
 </resources>

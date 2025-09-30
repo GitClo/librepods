@@ -28,19 +28,47 @@ import kotlin.io.encoding.ExperimentalEncodingApi
 
 private const val TAG="AppListenerService"
 
-val cameraPackages = setOf(
+val cameraPackages = mutableSetOf(
     "com.google.android.GoogleCamera",
     "com.sec.android.app.camera",
     "com.android.camera",
     "com.oppo.camera",
     "com.motorola.camera2",
-    "org.codeaurora.snapcam",
-    "com.nothing.camera"
+    "org.codeaurora.snapcam"
 )
 
 var cameraOpen = false
+private var currentCustomPackage: String? = null
 
 class AppListenerService : AccessibilityService() {
+    private lateinit var prefs: android.content.SharedPreferences
+    private val preferenceChangeListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { sharedPreferences, key ->
+        if (key == "custom_camera_package") {
+            val newPackage = sharedPreferences.getString(key, null)
+            currentCustomPackage?.let { cameraPackages.remove(it) }
+            if (newPackage != null && newPackage.isNotBlank()) {
+                cameraPackages.add(newPackage)
+            }
+            currentCustomPackage = newPackage
+        }
+    }
+
+    override fun onCreate() {
+        super.onCreate()
+        prefs = getSharedPreferences("settings", MODE_PRIVATE)
+        val customPackage = prefs.getString("custom_camera_package", null)
+        if (customPackage != null && customPackage.isNotBlank()) {
+            cameraPackages.add(customPackage)
+            currentCustomPackage = customPackage
+        }
+        prefs.registerOnSharedPreferenceChangeListener(preferenceChangeListener)
+    }
+
+    override fun onDestroy() {
+        super.onDestroy()
+        prefs.unregisterOnSharedPreferenceChangeListener(preferenceChangeListener)
+    }
+
     override fun onAccessibilityEvent(ev: AccessibilityEvent?) {
         try {
             if (ev?.eventType == AccessibilityEvent.TYPE_WINDOW_STATE_CHANGED) {

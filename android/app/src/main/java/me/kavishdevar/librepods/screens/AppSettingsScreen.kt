@@ -103,14 +103,18 @@ fun AppSettingsScreen(navController: NavController) {
     val showResetDialog = remember { mutableStateOf(false) }
     val showIrkDialog = remember { mutableStateOf(false) }
     val showEncKeyDialog = remember { mutableStateOf(false) }
+    val showCameraDialog = remember { mutableStateOf(false) }
     val irkValue = remember { mutableStateOf("") }
     val encKeyValue = remember { mutableStateOf("") }
+    val cameraPackageValue = remember { mutableStateOf("") }
     val irkError = remember { mutableStateOf<String?>(null) }
     val encKeyError = remember { mutableStateOf<String?>(null) }
+    val cameraPackageError = remember { mutableStateOf<String?>(null) }
 
     LaunchedEffect(Unit) {
         val savedIrk = sharedPreferences.getString(AACPManager.Companion.ProximityKeyType.IRK.name, null)
         val savedEncKey = sharedPreferences.getString(AACPManager.Companion.ProximityKeyType.ENC_KEY.name, null)
+        val savedCameraPackage = sharedPreferences.getString("custom_camera_package", null)
 
         if (savedIrk != null) {
             try {
@@ -130,6 +134,9 @@ fun AppSettingsScreen(navController: NavController) {
                 encKeyValue.value = ""
                 e.printStackTrace()
             }
+        }
+        if (savedCameraPackage != null) {
+            cameraPackageValue.value = savedCameraPackage
         }
     }
 
@@ -290,6 +297,18 @@ fun AppSettingsScreen(navController: NavController) {
                 endLabel = "85%",
                 onValueChange = { newValue -> conversationalAwarenessVolume.floatValue = newValue },
                 independent = true
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            NavigationButton(
+                to = "",
+                title = stringResource(R.string.camera_control),
+                name = stringResource(R.string.set_custom_camera_package),
+                navController = navController,
+                onClick = { showCameraDialog.value = true },
+                independent = true,
+                description = stringResource(R.string.camera_control_app_description)
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -867,6 +886,86 @@ fun AppSettingsScreen(navController: NavController) {
                     dismissButton = {
                         TextButton(
                             onClick = { showEncKeyDialog.value = false }
+                        ) {
+                            Text(
+                                "Cancel",
+                                fontFamily = FontFamily(Font(R.font.sf_pro)),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    }
+                )
+            }
+
+            if (showCameraDialog.value) {
+                AlertDialog(
+                    onDismissRequest = { showCameraDialog.value = false },
+                    title = {
+                        Text(
+                            stringResource(R.string.set_custom_camera_package),
+                            fontFamily = FontFamily(Font(R.font.sf_pro)),
+                            fontWeight = FontWeight.Medium
+                        )
+                    },
+                    text = {
+                        Column {
+                            Text(
+                                stringResource(R.string.enter_custom_camera_package),
+                                fontFamily = FontFamily(Font(R.font.sf_pro)),
+                                modifier = Modifier.padding(bottom = 8.dp)
+                            )
+
+                            OutlinedTextField(
+                                value = cameraPackageValue.value,
+                                onValueChange = {
+                                    cameraPackageValue.value = it
+                                    cameraPackageError.value = null
+                                },
+                                modifier = Modifier.fillMaxWidth(),
+                                isError = cameraPackageError.value != null,
+                                keyboardOptions = KeyboardOptions(
+                                    keyboardType = KeyboardType.Ascii,
+                                    capitalization = KeyboardCapitalization.None
+                                ),
+                                colors = OutlinedTextFieldDefaults.colors(
+                                    focusedBorderColor = if (isDarkTheme) Color(0xFF007AFF) else Color(0xFF3C6DF5),
+                                    unfocusedBorderColor = if (isDarkTheme) Color.Gray else Color.LightGray
+                                ),
+                                supportingText = {
+                                    if (cameraPackageError.value != null) {
+                                        Text(cameraPackageError.value!!, color = MaterialTheme.colorScheme.error)
+                                    }
+                                },
+                                label = { Text(stringResource(R.string.custom_camera_package)) }
+                            )
+                        }
+                    },
+                    confirmButton = {
+                        val successText = stringResource(R.string.custom_camera_package_set_success)
+                        TextButton(
+                            onClick = {
+                                if (cameraPackageValue.value.isBlank()) {
+                                    sharedPreferences.edit { remove("custom_camera_package") }
+                                    Toast.makeText(context, successText, Toast.LENGTH_SHORT).show()
+                                    showCameraDialog.value = false
+                                    return@TextButton
+                                }
+
+                                sharedPreferences.edit { putString("custom_camera_package", cameraPackageValue.value) }
+                                Toast.makeText(context, successText, Toast.LENGTH_SHORT).show()
+                                showCameraDialog.value = false
+                            }
+                        ) {
+                            Text(
+                                "Save",
+                                fontFamily = FontFamily(Font(R.font.sf_pro)),
+                                fontWeight = FontWeight.Medium
+                            )
+                        }
+                    },
+                    dismissButton = {
+                        TextButton(
+                            onClick = { showCameraDialog.value = false }
                         ) {
                             Text(
                                 "Cancel",
