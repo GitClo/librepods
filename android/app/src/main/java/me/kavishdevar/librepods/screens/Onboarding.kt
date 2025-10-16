@@ -63,6 +63,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.StrokeCap
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
 import androidx.compose.ui.text.font.FontFamily
@@ -201,7 +202,7 @@ fun Onboarding(navController: NavController, activityContext: Context) {
                         Spacer(modifier = Modifier.height(24.dp))
 
                         Text(
-                            text = "Root Access Required",
+                            text = stringResource(R.string.root_access_required),
                             style = TextStyle(
                                 fontSize = 22.sp,
                                 fontWeight = FontWeight.Bold,
@@ -214,7 +215,7 @@ fun Onboarding(navController: NavController, activityContext: Context) {
                         Spacer(modifier = Modifier.height(8.dp))
 
                         Text(
-                            text = "This app needs root access to hook onto the Bluetooth library",
+                            text = stringResource(R.string.this_app_needs_root_access_to_hook_onto_the_bluetooth_library),
                             style = TextStyle(
                                 fontSize = 16.sp,
                                 fontWeight = FontWeight.Normal,
@@ -227,7 +228,7 @@ fun Onboarding(navController: NavController, activityContext: Context) {
                         if (rootCheckFailed) {
                             Spacer(modifier = Modifier.height(8.dp))
                             Text(
-                                text = "Root access was denied. Please grant root permissions.",
+                                text = stringResource(R.string.root_access_denied),
                                 style = TextStyle(
                                     fontSize = 14.sp,
                                     fontWeight = FontWeight.Normal,

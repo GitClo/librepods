@@ -221,9 +221,10 @@ fun HeadTrackingScreen(navController: NavController) {
                     }
                 }
             }
+            val gestureTextValue = stringResource(R.string.shake_your_head_or_nod)
             StyledButton(
                 onClick = {
-                    gestureText = "Shake your head or nod!"
+                    gestureText = gestureTextValue
                     coroutineScope.launch {
                         val accepted = ServiceManager.getService()?.testHeadGestures() ?: false
                         gestureText = if (accepted) "\"Yes\" gesture detected." else "\"No\" gesture detected."

@@ -27,7 +27,6 @@ import android.content.Context
 import android.content.Context.MODE_PRIVATE
 import android.content.Intent
 import android.content.ServiceConnection
-import android.content.SharedPreferences
 import android.net.Uri
 import android.os.Build
 import android.os.Bundle
@@ -74,11 +73,9 @@ import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -94,6 +91,8 @@ import androidx.compose.ui.graphics.drawscope.rotate
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.platform.LocalWindowInfo
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.res.vectorResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.Font
@@ -111,11 +110,11 @@ import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.MultiplePermissionsState
 import com.google.accompanist.permissions.isGranted
 import com.google.accompanist.permissions.rememberMultiplePermissionsState
-import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import com.kyant.backdrop.backdrops.layerBackdrop
+import com.kyant.backdrop.backdrops.rememberLayerBackdrop
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
-import me.kavishdevar.librepods.constants.AirPodsNotifications
 import me.kavishdevar.librepods.composables.StyledIconButton
+import me.kavishdevar.librepods.constants.AirPodsNotifications
 import me.kavishdevar.librepods.screens.AccessibilitySettingsScreen
 import me.kavishdevar.librepods.screens.AdaptiveStrengthScreen
 import me.kavishdevar.librepods.screens.AirPodsSettingsScreen
@@ -131,9 +130,9 @@ import me.kavishdevar.librepods.screens.OpenSourceLicensesScreen
 import me.kavishdevar.librepods.screens.RenameScreen
 import me.kavishdevar.librepods.screens.TransparencySettingsScreen
 import me.kavishdevar.librepods.screens.TroubleshootingScreen
+import me.kavishdevar.librepods.screens.UpdateHearingTestScreen
 import me.kavishdevar.librepods.services.AirPodsService
 import me.kavishdevar.librepods.ui.theme.LibrePodsTheme
-import me.kavishdevar.librepods.utils.CrossDevice
 import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.Base64
 import kotlin.io.encoding.ExperimentalEncodingApi
@@ -310,7 +309,7 @@ fun Main() {
         val context = LocalContext.current
 
         val navController = rememberNavController()
-        
+
         Box (
             modifier = Modifier
                 .fillMaxSize()
@@ -406,6 +405,9 @@ fun Main() {
                     composable("open_source_licenses") {
                         OpenSourceLicensesScreen(navController)
                     }
+                    composable("update_hearing_test") {
+                        UpdateHearingTestScreen(navController)
+                    }
                 }
             }
 
@@ -424,7 +426,10 @@ fun Main() {
                 exit = fadeOut(animationSpec = tween()) + scaleOut(targetScale = 0.5f, animationSpec = tween(100)),
                 modifier = Modifier
                     .align(Alignment.TopStart)
-                    .padding(start = 8.dp, top = (context.resources.configuration.screenHeightDp.dp * 0.05f).value.dp)
+                    .padding(
+                        start = 8.dp,
+                        top = (LocalWindowInfo.current.containerSize.width * 0.05f).dp
+                    )
             ) {
                 StyledIconButton(
                         onClick = { navController.popBackStack() },
@@ -556,7 +561,7 @@ fun PermissionsScreen(
         Spacer(modifier = Modifier.height(8.dp))
 
         Text(
-            text = "The following permissions are required to use the app. Please grant them to continue.",
+            text = stringResource(R.string.permissions_required),
             style = TextStyle(
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Normal,
@@ -733,7 +738,11 @@ fun PermissionCard(
                 modifier = Modifier
                     .size(40.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(if (isGranted) accentColor.copy(alpha = 0.15f) else Color.Gray.copy(alpha = 0.15f)),
+                    .background(
+                        if (isGranted) accentColor.copy(alpha = 0.15f) else Color.Gray.copy(
+                            alpha = 0.15f
+                        )
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(

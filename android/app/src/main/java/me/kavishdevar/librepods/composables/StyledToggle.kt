@@ -59,7 +59,6 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.core.content.edit
-import kotlinx.coroutines.delay
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.services.ServiceManager
 import me.kavishdevar.librepods.utils.AACPManager
@@ -473,30 +472,12 @@ fun StyledToggle(
     val attManager = ServiceManager.getService()?.attManager ?: return
     val isDarkTheme = isSystemInDarkTheme()
     val textColor = if (isDarkTheme) Color.White else Color.Black
-    var checked by remember { mutableStateOf(false) }
+    val checkedValue = attManager.read(attHandle).getOrNull(0)?.toInt()
+    var checked by remember { mutableStateOf(checkedValue !=0) }
     var backgroundColor by remember { mutableStateOf(if (isDarkTheme) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)) }
     val animatedBackgroundColor by animateColorAsState(targetValue = backgroundColor, animationSpec = tween(durationMillis = 500))
 
-    LaunchedEffect(Unit) {
-        attManager.enableNotifications(attHandle)
-
-        var parsed = false
-        for (attempt in 1..3) {
-            try {
-                val data = attManager.read(attHandle)
-                checked = data[0].toInt() != 0
-                Log.d("StyledToggle", "Read attempt $attempt for $label: enabled=$checked")
-                parsed = true
-                break
-            } catch (e: Exception) {
-                Log.w("StyledToggle", "Read attempt $attempt for $label failed: ${e.message}")
-            }
-            delay(200)
-        }
-        if (!parsed) {
-            Log.d("StyledToggle", "Failed to read state for $label after 3 attempts")
-        }
-    }
+    attManager.enableNotifications(attHandle)
 
     if (sharedPreferenceKey != null && sharedPreferences != null) {
         checked = sharedPreferences.getBoolean(sharedPreferenceKey, checked)

@@ -54,16 +54,15 @@ import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
-import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
+import dev.chrisbanes.haze.rememberHazeState
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.composables.ConfirmationDialog
 import me.kavishdevar.librepods.composables.NavigationButton
-import me.kavishdevar.librepods.composables.StyledIconButton
 import me.kavishdevar.librepods.composables.StyledScaffold
 import me.kavishdevar.librepods.composables.StyledToggle
 import me.kavishdevar.librepods.services.ServiceManager
@@ -83,7 +82,6 @@ fun HearingAidScreen(navController: NavController) {
     val isDarkTheme = isSystemInDarkTheme()
     val textColor = if (isDarkTheme) Color.White else Color.Black
     val verticalScrollState  = rememberScrollState()
-    val hazeState = remember { HazeState() }
     val snackbarHostState = remember { SnackbarHostState() }
     val attManager = ServiceManager.getService()?.attManager ?: return
 
@@ -102,7 +100,7 @@ fun HearingAidScreen(navController: NavController) {
     StyledScaffold(
         title = stringResource(R.string.hearing_aid),
         snackbarHostState = snackbarHostState,
-    ) { spacerHeight ->
+    ) { spacerHeight, hazeState ->
         Column(
             modifier = Modifier
                 .layerBackdrop(backdrop)
@@ -127,9 +125,9 @@ fun HearingAidScreen(navController: NavController) {
                 }
             }
 
-            val mediaAssistEnabled = remember { mutableStateOf(false) }
-            val adjustMediaEnabled = remember { mutableStateOf(false) }
-            val adjustPhoneEnabled = remember { mutableStateOf(false) }
+//            val mediaAssistEnabled = remember { mutableStateOf(false) }
+//            val adjustMediaEnabled = remember { mutableStateOf(false) }
+//            val adjustPhoneEnabled = remember { mutableStateOf(false) }
 
             LaunchedEffect(Unit) {
                 aacpManager?.registerControlCommandListener(AACPManager.Companion.ControlCommandIdentifiers.HEARING_AID, hearingAidListener)
@@ -154,13 +152,13 @@ fun HearingAidScreen(navController: NavController) {
                 initialLoad.value = false
             }
 
-            fun onAdjustPhoneChange(value: Boolean) {
-                // TODO
-            }
+//            fun onAdjustPhoneChange(value: Boolean) {
+//                // TODO
+//            }
 
-            fun onAdjustMediaChange(value: Boolean) {
-                // TODO
-            }
+//            fun onAdjustMediaChange(value: Boolean) {
+//                // TODO
+//            }
 
             Text(
                 text = stringResource(R.string.hearing_aid),
@@ -212,6 +210,13 @@ fun HearingAidScreen(navController: NavController) {
                 modifier = Modifier.padding(horizontal = 16.dp)
             )
             Spacer(modifier = Modifier.height(16.dp))
+
+            NavigationButton(
+                to = "update_hearing_test",
+                name = stringResource(R.string.update_hearing_test),
+                navController,
+                independent = true
+            )
 
             // not implemented yet
 
@@ -280,7 +285,7 @@ fun HearingAidScreen(navController: NavController) {
                 }
             }
         },
-        hazeState = hazeState,
+        hazeState = rememberHazeState(),
         // backdrop = backdrop
     )
 }

@@ -24,7 +24,7 @@
             android:layout_marginTop="16dp"
             android:fontFamily="@font/sf_pro"
             android:gravity="center"
-            android:text="Kavish's AirPods Pro"
+            android:text="AirPods Pro"
             android:textColor="@color/popup_text"
 
             android:textSize="28sp"

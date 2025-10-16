@@ -390,6 +390,7 @@ class BLEManager(private val context: Context) {
     private fun cleanupStaleDevices() {
         val now = System.currentTimeMillis()
         val staleCutoff = now - STALE_DEVICE_TIMEOUT_MS
+        val hadDevices = deviceStatusMap.isNotEmpty()
 
         val staleDevices = deviceStatusMap.filter { it.value.lastSeen < staleCutoff }
 
@@ -398,7 +399,7 @@ class BLEManager(private val context: Context) {
             Log.d(TAG, "Removed stale device from tracking: ${device.key}")
         }
 
-        if (deviceStatusMap.isEmpty()) {
+        if (hadDevices && deviceStatusMap.isEmpty()) {
             airPodsStatusListener?.onDeviceDisappeared()
         }
     }

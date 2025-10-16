@@ -80,7 +80,6 @@ import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import kotlinx.coroutines.launch
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.composables.NavigationButton
-import me.kavishdevar.librepods.composables.StyledIconButton
 import me.kavishdevar.librepods.composables.StyledScaffold
 import me.kavishdevar.librepods.composables.StyledSlider
 import me.kavishdevar.librepods.composables.StyledToggle
@@ -292,7 +291,7 @@ fun AppSettingsScreen(navController: NavController) {
             )
 
             Spacer(modifier = Modifier.height(16.dp))
-            
+
             NavigationButton(
                 to = "",
                 title = stringResource(R.string.camera_control),

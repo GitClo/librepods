@@ -20,39 +20,47 @@ package me.kavishdevar.librepods.screens
 
 import android.annotation.SuppressLint
 import android.util.Log
-import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.MutableState
-import androidx.compose.runtime.mutableFloatStateOf
 import androidx.compose.runtime.mutableIntStateOf
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.TextStyle
+import androidx.compose.ui.text.font.Font
+import androidx.compose.ui.text.font.FontFamily
+import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import com.kyant.backdrop.backdrops.layerBackdrop
 import com.kyant.backdrop.backdrops.rememberLayerBackdrop
-import dev.chrisbanes.haze.HazeState
 import dev.chrisbanes.haze.hazeSource
 import dev.chrisbanes.haze.materials.ExperimentalHazeMaterialsApi
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
 import me.kavishdevar.librepods.R
 import me.kavishdevar.librepods.composables.StyledScaffold
-import me.kavishdevar.librepods.composables.StyledSlider
-import me.kavishdevar.librepods.composables.StyledToggle
 import me.kavishdevar.librepods.services.ServiceManager
 import me.kavishdevar.librepods.utils.AACPManager
 import me.kavishdevar.librepods.utils.ATTHandles
@@ -69,17 +77,25 @@ private const val TAG = "HearingAidAdjustments"
 @ExperimentalHazeMaterialsApi
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalEncodingApi::class)
 @Composable
-fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController) {
-    isSystemInDarkTheme()
+fun UpdateHearingTestScreen(@Suppress("unused") navController: NavController) {
     val verticalScrollState = rememberScrollState()
-    val hazeState = remember { HazeState() }
-    val attManager = ServiceManager.getService()?.attManager ?: throw IllegalStateException("ATTManager not available")
+    val attManager = ServiceManager.getService()?.attManager
+    if (attManager == null) {
+        Text(
+            text = stringResource(R.string.att_manager_is_null_try_reconnecting),
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(16.dp),
+            textAlign = TextAlign.Center
+        )
+        return
+    }
 
     val aacpManager = remember { ServiceManager.getService()?.aacpManager }
     val backdrop = rememberLayerBackdrop()
     StyledScaffold(
         title = stringResource(R.string.adjustments)
-    ) { spacerHeight ->
+    ) { spacerHeight, hazeState ->
         Column(
             modifier = Modifier
                 .hazeSource(hazeState)
@@ -91,39 +107,38 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
         ) {
             Spacer(modifier = Modifier.height(spacerHeight))
 
-            val amplificationSliderValue = remember { mutableFloatStateOf(0.5f) }
-            val balanceSliderValue = remember { mutableFloatStateOf(0.5f) }
-            val toneSliderValue = remember { mutableFloatStateOf(0.5f) }
-            val ambientNoiseReductionSliderValue = remember { mutableFloatStateOf(0.0f) }
-            val conversationBoostEnabled = remember { mutableStateOf(false) }
-            val eq = remember { mutableStateOf(FloatArray(8)) }
-            val ownVoiceAmplification = remember { mutableFloatStateOf(0.5f) }
+            Text(
+                text = stringResource(R.string.hearing_test_value_instruction),
+                fontSize = 16.sp,
+                modifier = Modifier.fillMaxWidth(),
+                textAlign = TextAlign.Center,
+                fontFamily = FontFamily(Font(R.font.sf_pro))
+            )
 
-            val phoneMediaEQ = remember { mutableStateOf(FloatArray(8) { 0.5f }) }
-            val phoneEQEnabled = remember { mutableStateOf(false) }
-            val mediaEQEnabled = remember { mutableStateOf(false) }
+            val conversationBoostEnabled = remember { mutableStateOf(false) }
+            val leftEQ = remember { mutableStateOf(FloatArray(8)) }
+            val rightEQ = remember { mutableStateOf(FloatArray(8)) }
 
             val initialLoadComplete = remember { mutableStateOf(false) }
-
             val initialReadSucceeded = remember { mutableStateOf(false) }
             val initialReadAttempts = remember { mutableIntStateOf(0) }
 
             val hearingAidSettings = remember {
                 mutableStateOf(
                     HearingAidSettings(
-                        leftEQ = eq.value,
-                        rightEQ = eq.value,
-                        leftAmplification = amplificationSliderValue.floatValue + (0.5f - balanceSliderValue.floatValue) * amplificationSliderValue.floatValue * 2,
-                        rightAmplification = amplificationSliderValue.floatValue + (balanceSliderValue.floatValue - 0.5f) * amplificationSliderValue.floatValue * 2,
-                        leftTone = toneSliderValue.floatValue,
-                        rightTone = toneSliderValue.floatValue,
+                        leftEQ = leftEQ.value,
+                        rightEQ = rightEQ.value,
+                        leftAmplification = 0.5f,
+                        rightAmplification = 0.5f,
+                        leftTone = 0.5f,
+                        rightTone = 0.5f,
                         leftConversationBoost = conversationBoostEnabled.value,
                         rightConversationBoost = conversationBoostEnabled.value,
-                        leftAmbientNoiseReduction = ambientNoiseReductionSliderValue.floatValue,
-                        rightAmbientNoiseReduction = ambientNoiseReductionSliderValue.floatValue,
-                        netAmplification = amplificationSliderValue.floatValue,
-                        balance = balanceSliderValue.floatValue,
-                        ownVoiceAmplification = ownVoiceAmplification.floatValue
+                        leftAmbientNoiseReduction = 0.0f,
+                        rightAmbientNoiseReduction = 0.0f,
+                        netAmplification = 0.5f,
+                        balance = 0.5f,
+                        ownVoiceAmplification = 0.5f
                     )
                 )
             }
@@ -152,13 +167,9 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
                     override fun invoke(value: ByteArray) {
                         val parsed = parseHearingAidSettingsResponse(value)
                         if (parsed != null) {
-                            amplificationSliderValue.floatValue = parsed.netAmplification
-                            balanceSliderValue.floatValue = parsed.balance
-                            toneSliderValue.floatValue = parsed.leftTone
-                            ambientNoiseReductionSliderValue.floatValue = parsed.leftAmbientNoiseReduction
+                            leftEQ.value = parsed.leftEQ.copyOf()
+                            rightEQ.value = parsed.rightEQ.copyOf()
                             conversationBoostEnabled.value = parsed.leftConversationBoost
-                            eq.value = parsed.leftEQ.copyOf()
-                            ownVoiceAmplification.floatValue = parsed.ownVoiceAmplification
                             Log.d(TAG, "Updated hearing aid settings from notification")
                         } else {
                             Log.w(TAG, "Failed to parse hearing aid settings from notification")
@@ -180,7 +191,7 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
                 }
             }
 
-            LaunchedEffect(amplificationSliderValue.floatValue, balanceSliderValue.floatValue, toneSliderValue.floatValue, conversationBoostEnabled.value, ambientNoiseReductionSliderValue.floatValue, ownVoiceAmplification.floatValue, initialLoadComplete.value, initialReadSucceeded.value) {
+            LaunchedEffect(leftEQ.value, rightEQ.value, conversationBoostEnabled.value, initialLoadComplete.value, initialReadSucceeded.value) {
                 if (!initialLoadComplete.value) {
                     Log.d(TAG, "Initial device load not complete - skipping send")
                     return@LaunchedEffect
@@ -192,19 +203,19 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
                 }
 
                 hearingAidSettings.value = HearingAidSettings(
-                    leftEQ = eq.value,
-                    rightEQ = eq.value,
-                    leftAmplification = amplificationSliderValue.floatValue + if (balanceSliderValue.floatValue < 0) -balanceSliderValue.floatValue else 0f,
-                    rightAmplification = amplificationSliderValue.floatValue + if (balanceSliderValue.floatValue > 0) balanceSliderValue.floatValue else 0f,
-                    leftTone = toneSliderValue.floatValue,
-                    rightTone = toneSliderValue.floatValue,
+                    leftEQ = leftEQ.value,
+                    rightEQ = rightEQ.value,
+                    leftAmplification = 0.5f,
+                    rightAmplification = 0.5f,
+                    leftTone = 0.5f,
+                    rightTone = 0.5f,
                     leftConversationBoost = conversationBoostEnabled.value,
                     rightConversationBoost = conversationBoostEnabled.value,
-                    leftAmbientNoiseReduction = ambientNoiseReductionSliderValue.floatValue,
-                    rightAmbientNoiseReduction = ambientNoiseReductionSliderValue.floatValue,
-                    netAmplification = amplificationSliderValue.floatValue,
-                    balance = balanceSliderValue.floatValue,
-                    ownVoiceAmplification = ownVoiceAmplification.floatValue
+                    leftAmbientNoiseReduction = 0.0f,
+                    rightAmbientNoiseReduction = 0.0f,
+                    netAmplification = 0.5f,
+                    balance = 0.5f,
+                    ownVoiceAmplification = 0.5f
                 )
                 Log.d(TAG, "Updated settings: ${hearingAidSettings.value}")
                 sendHearingAidSettings(attManager, hearingAidSettings.value, debounceJob)
@@ -221,10 +232,8 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
                             Log.d(TAG, "Found AACPManager, reading cached EQ data")
                             val aacpEQ = aacpManager.eqData
                             if (aacpEQ.isNotEmpty()) {
-                                eq.value = aacpEQ.copyOf()
-                                phoneMediaEQ.value = aacpEQ.copyOf()
-                                phoneEQEnabled.value = aacpManager.eqOnPhone
-                                mediaEQEnabled.value = aacpManager.eqOnMedia
+                                leftEQ.value = aacpEQ.copyOf()
+                                rightEQ.value = aacpEQ.copyOf()
                                 Log.d(TAG, "Populated EQ from AACPManager: ${aacpEQ.toList()}")
                             } else {
                                 Log.d(TAG, "AACPManager EQ data empty")
@@ -256,13 +265,9 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
 
                     if (parsedSettings != null) {
                         Log.d(TAG, "Initial hearing aid settings: $parsedSettings")
-                        amplificationSliderValue.floatValue = parsedSettings.netAmplification
-                        balanceSliderValue.floatValue = parsedSettings.balance
-                        toneSliderValue.floatValue = parsedSettings.leftTone
-                        ambientNoiseReductionSliderValue.floatValue = parsedSettings.leftAmbientNoiseReduction
+                        leftEQ.value = parsedSettings.leftEQ.copyOf()
+                        rightEQ.value = parsedSettings.rightEQ.copyOf()
                         conversationBoostEnabled.value = parsedSettings.leftConversationBoost
-                        eq.value = parsedSettings.leftEQ.copyOf()
-                        ownVoiceAmplification.floatValue = parsedSettings.ownVoiceAmplification
                         initialReadSucceeded.value = true
                     } else {
                         Log.d(TAG, "Failed to read/parse initial hearing aid settings after ${initialReadAttempts.intValue} attempts")
@@ -274,68 +279,81 @@ fun HearingAidAdjustmentsScreen(@Suppress("unused") navController: NavController
                 }
             }
 
-            StyledSlider(
-                label = stringResource(R.string.amplification),
-                valueRange = -1f..1f,
-                mutableFloatState = amplificationSliderValue,
-                onValueChange = {
-                    amplificationSliderValue.floatValue = it
-                },
-                startIcon = "􀊥",
-                endIcon = "􀊩",
-                independent = true,
-            )
+            val frequencies = listOf("250Hz", "500Hz", "1kHz", "2kHz", "3kHz", "4kHz", "6kHz", "8kHz")
 
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                Spacer(modifier = Modifier.width(60.dp))
+                Text(
+                    text = stringResource(R.string.left),
+                    fontSize = 18.sp,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(R.font.sf_pro))
+                )
+                Text(
+                    text = stringResource(R.string.right),
+                    fontSize = 18.sp,
+                    modifier = Modifier.weight(1f),
+                    textAlign = TextAlign.Center,
+                    fontFamily = FontFamily(Font(R.font.sf_pro))
+                )
+            }
 
-            StyledToggle(
-                label = stringResource(R.string.swipe_to_control_amplification),
-                controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.HPS_GAIN_SWIPE,
-                description = stringResource(R.string.swipe_amplification_description)
-            )
-
-            StyledSlider(
-                label = stringResource(R.string.balance),
-                valueRange = -1f..1f,
-                mutableFloatState = balanceSliderValue,
-                onValueChange = {
-                    balanceSliderValue.floatValue = it
-                },
-                snapPoints = listOf(-1f, 0f, 1f),
-                startLabel = stringResource(R.string.left),
-                endLabel = stringResource(R.string.right),
-                independent = true,
-            )
-
-            StyledSlider(
-                label = stringResource(R.string.tone),
-                valueRange = -1f..1f,
-                mutableFloatState = toneSliderValue,
-                onValueChange = {
-                    toneSliderValue.floatValue = it
-                },
-                startLabel = stringResource(R.string.darker),
-                endLabel = stringResource(R.string.brighter),
-                independent = true,
-            )
-
-            StyledSlider(
-                label = stringResource(R.string.ambient_noise_reduction),
-                valueRange = 0f..1f,
-                mutableFloatState = ambientNoiseReductionSliderValue,
-                onValueChange = {
-                    ambientNoiseReductionSliderValue.floatValue = it
-                },
-                startLabel = stringResource(R.string.less),
-                endLabel = stringResource(R.string.more),
-                independent = true,
-            )
-
-            StyledToggle(
-                label = stringResource(R.string.conversation_boost),
-                checkedState = conversationBoostEnabled,
-                independent = true,
-                description = stringResource(R.string.conversation_boost_description)
-            )
+            frequencies.forEachIndexed { index, freq ->
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    Text(
+                        text = freq,
+                        modifier = Modifier
+                            .width(60.dp)
+                            .align(Alignment.CenterVertically),
+                        textAlign = TextAlign.End,
+                        fontSize = 16.sp,
+                        fontFamily = FontFamily(Font(R.font.sf_pro)),
+                    )
+                    OutlinedTextField(
+                        value = leftEQ.value[index].toString(),
+                        onValueChange = { newValue ->
+                            val parsed = newValue.toFloatOrNull()
+                            if (parsed != null) {
+                                val newArray = leftEQ.value.copyOf()
+                                newArray[index] = parsed
+                                leftEQ.value = newArray
+                            }
+                        },
+//                        label = { Text("Value", fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.sf_pro))) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.sf_pro)),
+                            fontSize = 14.sp
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+                    OutlinedTextField(
+                        value = rightEQ.value[index].toString(),
+                        onValueChange = { newValue ->
+                            val parsed = newValue.toFloatOrNull()
+                            if (parsed != null) {
+                                val newArray = rightEQ.value.copyOf()
+                                newArray[index] = parsed
+                                rightEQ.value = newArray
+                            }
+                        },
+//                        label = { Text("Value", fontSize = 14.sp, fontFamily = FontFamily(Font(R.font.sf_pro))) },
+                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number),
+                        textStyle = TextStyle(
+                            fontFamily = FontFamily(Font(R.font.sf_pro)),
+                            fontSize = 14.sp
+                        ),
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+            }
         }
     }
 }

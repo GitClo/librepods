@@ -94,7 +94,6 @@ import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import me.kavishdevar.librepods.R
-import me.kavishdevar.librepods.composables.StyledIconButton
 import me.kavishdevar.librepods.composables.StyledScaffold
 import me.kavishdevar.librepods.utils.LogCollector
 import java.io.File
@@ -370,7 +369,7 @@ fun TroubleshootingScreen(navController: NavController) {
                         Spacer(modifier = Modifier.height(16.dp))
 
                         Text(
-                            text = "TROUBLESHOOTING STEPS",
+                            text = stringResource(R.string.troubleshooting_steps),
                             style = TextStyle(
                                 fontSize = 14.sp,
                                 fontWeight = FontWeight.Light,

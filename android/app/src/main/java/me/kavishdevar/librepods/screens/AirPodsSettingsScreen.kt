@@ -91,6 +91,7 @@ import me.kavishdevar.librepods.constants.AirPodsNotifications
 import me.kavishdevar.librepods.services.AirPodsService
 import me.kavishdevar.librepods.ui.theme.LibrePodsTheme
 import me.kavishdevar.librepods.utils.AACPManager
+import me.kavishdevar.librepods.utils.RadareOffsetFinder
 import kotlin.io.encoding.ExperimentalEncodingApi
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalHazeMaterialsApi::class)
@@ -196,8 +197,19 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
             }
         }
     }
+
+    LaunchedEffect(service) {
+        service.let {
+            it.sendBroadcast(Intent(AirPodsNotifications.BATTERY_DATA).apply {
+                putParcelableArrayListExtra("data", ArrayList(it.getBattery()))
+            })
+            it.sendBroadcast(Intent(AirPodsNotifications.ANC_DATA).apply {
+                putExtra("data", it.getANC())
+            })
+        }
+    }
+
     val darkMode = isSystemInDarkTheme()
-    val backdrop = rememberLayerBackdrop()
     StyledScaffold(
         title = deviceName.text,
         actionButtons = listOf(
@@ -218,26 +230,14 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
                     .fillMaxSize()
                     .hazeSource(hazeState)
                     .padding(horizontal = 16.dp)
-                    .layerBackdrop(backdrop)
             ) {
-                item { Spacer(modifier = Modifier.height(spacerHeight)) }
-                item {
-                    LaunchedEffect(service) {
-                        service.let {
-                            it.sendBroadcast(Intent(AirPodsNotifications.BATTERY_DATA).apply {
-                                putParcelableArrayListExtra("data", ArrayList(it.getBattery()))
-                            })
-                            it.sendBroadcast(Intent(AirPodsNotifications.ANC_DATA).apply {
-                                putExtra("data", it.getANC())
-                            })
-                        }
-                    }
-
+                item(key = "spacer_top") { Spacer(modifier = Modifier.height(spacerHeight)) }
+                item(key = "battery") {
                     BatteryView(service = service)
                 }
-                item { Spacer(modifier = Modifier.height(32.dp)) }
+                item(key = "spacer_battery") { Spacer(modifier = Modifier.height(32.dp)) }
 
-                item {
+                item(key = "name") {
                     NavigationButton(
                         to = "rename",
                         name = stringResource(R.string.name),
@@ -246,49 +246,55 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
                         independent = true
                     )
                 }
+                val actAsAppleDeviceHookEnabled = RadareOffsetFinder.isSdpOffsetAvailable()
+                if (actAsAppleDeviceHookEnabled) {
+                    item(key = "spacer_hearing_aid") { Spacer(modifier = Modifier.height(32.dp)) }
+                    item(key = "hearing_aid") {
+                        NavigationButton(
+                            to = "hearing_aid",
+                            name = stringResource(R.string.hearing_aid),
+                            navController = navController
+                        )
+                    }
+                }
 
-                item { Spacer(modifier = Modifier.height(32.dp)) }
-                item { NavigationButton(to = "hearing_aid", name = stringResource(R.string.hearing_aid), navController = navController) }
+                item(key = "spacer_noise") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "noise_control") { NoiseControlSettings(service = service) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { NoiseControlSettings(service = service) }
+                item(key = "spacer_press_hold") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "press_hold") { PressAndHoldSettings(navController = navController) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { PressAndHoldSettings(navController = navController) }
+                item(key = "spacer_call") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "call_control") { CallControlSettings(hazeState = hazeState) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { CallControlSettings(hazeState = hazeState) }
+                item(key = "spacer_camera") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "camera_control") { NavigationButton(to = "camera_control", name = stringResource(R.string.camera_remote), description = stringResource(R.string.camera_control_description), title = stringResource(R.string.camera_control), navController = navController) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { NavigationButton(to = "camera_control", name = stringResource(R.string.camera_remote), description = stringResource(R.string.camera_control_description), title = stringResource(R.string.camera_control), navController = navController) }
+                item(key = "spacer_audio") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "audio") { AudioSettings(navController = navController) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { AudioSettings(navController = navController) }
+                item(key = "spacer_connection") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "connection") { ConnectionSettings() }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { ConnectionSettings() }
+                item(key = "spacer_microphone") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "microphone") { MicrophoneSettings(hazeState) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { MicrophoneSettings(hazeState) }
-
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item {
+                item(key = "spacer_sleep") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "sleep_detection") {
                     StyledToggle(
                         label = stringResource(R.string.sleep_detection),
                         controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.SLEEP_DETECTION_CONFIG
                     )
                 }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item {
-                    NavigationButton(to = "head_tracking", name = stringResource(R.string.head_gestures), navController = navController, currentState = if (sharedPreferences.getBoolean("head_gestures", false)) stringResource(R.string.on) else stringResource(R.string.off))
-                }
+                item(key = "spacer_head_tracking") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "head_tracking") { NavigationButton(to = "head_tracking", name = stringResource(R.string.head_gestures), navController = navController, currentState = if (sharedPreferences.getBoolean("head_gestures", false)) stringResource(R.string.on) else stringResource(R.string.off)) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { NavigationButton(to = "accessibility", name = stringResource(R.string.accessibility), navController = navController) }
+                item(key = "spacer_accessibility") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "accessibility") { NavigationButton(to = "accessibility", name = stringResource(R.string.accessibility), navController = navController) }
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item {
+                item(key = "spacer_off_listening") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "off_listening") {
                     StyledToggle(
                         label = stringResource(R.string.off_listening_mode),
                         controlCommandIdentifier = AACPManager.Companion.ControlCommandIdentifiers.ALLOW_OFF_OPTION,
@@ -298,9 +304,9 @@ fun AirPodsSettingsScreen(dev: BluetoothDevice?, service: AirPodsService,
 
                 // an about card- everything but the version number is unknown - will add later if i find out
 
-                item { Spacer(modifier = Modifier.height(16.dp)) }
-                item { NavigationButton("debug", "Debug", navController) }
-                item { Spacer(Modifier.height(24.dp)) }
+                item(key = "spacer_debug") { Spacer(modifier = Modifier.height(16.dp)) }
+                item(key = "debug") { NavigationButton("debug", "Debug", navController) }
+                item(key = "spacer_bottom") { Spacer(Modifier.height(24.dp)) }
             }
         }
         else {

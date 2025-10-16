@@ -185,4 +185,13 @@
     <string name="app_listener_service_label">Camera listener</string>
     <string name="app_listener_service_description">Listener service for LibrePods to detect when the camera is active to activate camera control on AirPods.</string>
     <string name="open_source_licenses">Open Source Licenses</string>
+    <string name="update_hearing_test">Update Hearing Test Result</string>
+    <string name="att_manager_is_null_try_reconnecting">ATT Manager is null, Try reconnecting.</string>
+    <string name="permissions_required">The following permissions are required to use the app. Please grant them to continue.</string>
+    <string name="shake_your_head_or_nod">Shake your head or nod!</string>
+    <string name="root_access_required">Root Access Required</string>
+    <string name="this_app_needs_root_access_to_hook_onto_the_bluetooth_library">This app needs root access to hook onto the Bluetooth library</string>
+    <string name="root_access_denied">Root access was denied. Please grant root permissions.</string>
+    <string name="troubleshooting_steps">Troubleshooting Steps</string>
+    <string name="hearing_test_value_instruction">Please enter the loss values in dbHL</string>
 </resources>
