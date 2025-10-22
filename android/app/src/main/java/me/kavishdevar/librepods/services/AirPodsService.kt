@@ -926,8 +926,11 @@ class AirPodsService : Service(), SharedPreferences.OnSharedPreferenceChangeList
                 )
             }
 
-            override fun onDeviceMetadataReceived(deviceMetadata: ByteArray) {
-
+            override fun onDeviceInformationReceived(deviceInformation: AACPManager.Companion.AirPodsInformation) {
+                Log.d(
+                    "AirPodsParser",
+                    "Device Information: name: ${deviceInformation.name}, modelNumber: ${deviceInformation.modelNumber}, manufacturer: ${deviceInformation.manufacturer}, serialNumber: ${deviceInformation.serialNumber}, version1: ${deviceInformation.version1}, version2: ${deviceInformation.version2}, hardwareRevision: ${deviceInformation.hardwareRevision}, updaterIdentifier: ${deviceInformation.updaterIdentifier}, leftSerialNumber: ${deviceInformation.leftSerialNumber}, rightSerialNumber: ${deviceInformation.rightSerialNumber}, version3: ${deviceInformation.version3}"
+                )
             }
 
             @SuppressLint("NewApi")

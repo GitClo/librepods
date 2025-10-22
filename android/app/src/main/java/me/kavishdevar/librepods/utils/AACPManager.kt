@@ -42,7 +42,7 @@ class AACPManager {
             const val CONTROL_COMMAND: Byte = 0x09
             const val EAR_DETECTION: Byte = 0x06
             const val CONVERSATION_AWARENESS: Byte = 0x4B
-            const val DEVICE_METADATA: Byte = 0x1D
+            const val INFORMATION: Byte = 0x1D
             const val RENAME: Byte = 0x1E
             const val HEADTRACKING: Byte = 0x17
             const val PROXIMITY_KEYS_REQ: Byte = 0x30
@@ -181,6 +181,20 @@ class AACPManager {
             val info2: Byte,
             var type: String?
         )
+
+        data class AirPodsInformation(
+            val name: String,
+            val modelNumber: String,
+            val manufacturer: String,
+            val serialNumber: String,
+            val version1: String,
+            val version2: String,
+            val hardwareRevision: String,
+            val updaterIdentifier: String,
+            val leftSerialNumber: String,
+            val rightSerialNumber: String,
+            val version3: String
+        )
     }
 
     var controlCommandStatusList: MutableList<ControlCommandStatus> =
@@ -239,7 +253,7 @@ class AACPManager {
         fun onEarDetectionReceived(earDetection: ByteArray)
         fun onConversationAwarenessReceived(conversationAwareness: ByteArray)
         fun onControlCommandReceived(controlCommand: ByteArray)
-        fun onDeviceMetadataReceived(deviceMetadata: ByteArray)
+        fun onDeviceInformationReceived(deviceInformation: AirPodsInformation)
         fun onHeadTrackingReceived(headTracking: ByteArray)
         fun onUnknownPacketReceived(packet: ByteArray)
         fun onProximityKeysReceived(proximityKeys: ByteArray)
@@ -481,10 +495,6 @@ class AACPManager {
                 callback?.onConversationAwarenessReceived(packet)
             }
 
-            Opcodes.DEVICE_METADATA -> {
-                callback?.onDeviceMetadataReceived(packet)
-            }
-
             Opcodes.HEADTRACKING -> {
                 if (packet.size < 70) {
                     Log.w(
@@ -584,8 +594,14 @@ class AACPManager {
                 eqData = FloatArray(8) { i -> eq1.get(i) }
                 Log.d(TAG, "EQ Data set to: ${eqData.toList()}, eqOnPhone: $eqOnPhone, eqOnMedia: $eqOnMedia")
             }
-
+            
+            Opcodes.INFORMATION -> {
+                Log.e(TAG, "Parsing Information Packet")
+                val information = parseInformationPacket(packet)
+                callback?.onDeviceInformationReceived(information)
+            }
             else -> {
+                Log.d(TAG, "Unknown opcode received: ${opcode.toHexString()}")
                 callback?.onUnknownPacketReceived(packet)
             }
         }
@@ -1217,5 +1233,40 @@ class AACPManager {
         oldConnectedDevices = listOf()
         connectedDevices = listOf()
         audioSource = null
+    }
+
+    fun parseInformationPacket(packet: ByteArray): AirPodsInformation {
+        val data = packet.sliceArray(6 until packet.size)
+
+        var index = 0
+        while (index < data.size && data[index] != 0x00.toByte()) index++
+
+        val strings = mutableListOf<String>()
+        while (index < data.size) {
+            // skip 0x00 bytes
+            while (index < data.size && data[index] == 0x00.toByte()) index++
+            if (index >= data.size) break
+            val start = index
+            // find next 0x00 byte
+            while (index < data.size && data[index] != 0x00.toByte()) index++
+            val str = data.sliceArray(start until index).decodeToString()
+            strings.add(str)
+        }
+
+        strings.removeAt(0) // I'm too lazy to adjust, just removing the first empty string
+
+        return AirPodsInformation(
+            name = strings.getOrNull(0) ?: "",
+            modelNumber = strings.getOrNull(1) ?: "",
+            manufacturer = strings.getOrNull(2) ?: "",
+            serialNumber = strings.getOrNull(3) ?: "",
+            version1 = strings.getOrNull(4) ?: "",
+            version2 = strings.getOrNull(5) ?: "",
+            hardwareRevision = strings.getOrNull(6) ?: "",
+            updaterIdentifier = strings.getOrNull(7) ?: "",
+            leftSerialNumber = strings.getOrNull(8) ?: "",
+            rightSerialNumber = strings.getOrNull(9) ?: "",
+            version3 = strings.getOrNull(10) ?: "",
+        )
     }
 }
