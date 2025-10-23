@@ -170,7 +170,7 @@ fn generate_icon(text: &str, text_mode: bool, charging: bool) -> Icon {
 
     let mut img = ImageBuffer::from_fn(width, height, |_, _| Rgba([0u8, 0u8, 0u8, 0u8]));
 
-    let font_data = include_bytes!("/usr/share/fonts/truetype/dejavu/DejaVuSans.ttf");
+    let font_data = include_bytes!("../../assets/font/DejaVuSans.ttf");
     let font = match FontRef::try_from_slice(font_data) {
         Ok(f) => f,
         Err(_) => {
