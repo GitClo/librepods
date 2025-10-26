@@ -431,143 +431,143 @@ fun AccessibilitySettingsScreen(navController: NavController) {
             }
 
             if (!hearingAidEnabled.value&& isSdpOffsetAvailable.value) {
-                Text(
-                    text = stringResource(R.string.apply_eq_to),
-                    style = TextStyle(
-                        fontSize = 14.sp,
-                        fontWeight = FontWeight.Bold,
-                        color = textColor.copy(alpha = 0.6f),
-                        fontFamily = FontFamily(Font(R.font.sf_pro))
-                    ),
-                    modifier = Modifier.padding(8.dp, bottom = 0.dp)
-                )
-                Column(
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .background(backgroundColor, RoundedCornerShape(28.dp))
-                        .padding(vertical = 0.dp)
-                ) {
-                    val darkModeLocal = isSystemInDarkTheme()
-
-                    val phoneShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
-                    var phoneBackgroundColor by remember {
-                        mutableStateOf(
-                            if (darkModeLocal) Color(
-                                0xFF1C1C1E
-                            ) else Color(0xFFFFFFFF)
-                        )
-                    }
-                    val phoneAnimatedBackgroundColor by animateColorAsState(
-                        targetValue = phoneBackgroundColor,
-                        animationSpec = tween(durationMillis = 500)
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .fillMaxWidth()
-                            .background(phoneAnimatedBackgroundColor, phoneShape)
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onPress = {
-                                        phoneBackgroundColor =
-                                            if (darkModeLocal) Color(0x40888888) else Color(0x40D9D9D9)
-                                        tryAwaitRelease()
-                                        phoneBackgroundColor =
-                                            if (darkModeLocal) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)
-                                        phoneEQEnabled.value = !phoneEQEnabled.value
-                                    }
-                                )
-                            }
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            stringResource(R.string.phone),
-                            fontSize = 16.sp,
-                            color = textColor,
-                            fontFamily = FontFamily(Font(R.font.sf_pro)),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Checkbox(
-                            checked = phoneEQEnabled.value,
-                            onCheckedChange = { phoneEQEnabled.value = it },
-                            colors = CheckboxDefaults.colors().copy(
-                                checkedCheckmarkColor = Color(0xFF007AFF),
-                                uncheckedCheckmarkColor = Color.Transparent,
-                                checkedBoxColor = Color.Transparent,
-                                uncheckedBoxColor = Color.Transparent,
-                                checkedBorderColor = Color.Transparent,
-                                uncheckedBorderColor = Color.Transparent
-                            ),
-                            modifier = Modifier
-                                .height(24.dp)
-                                .scale(1.5f)
-                        )
-                    }
-
-                    HorizontalDivider(
-                        thickness = 1.dp,
-                        color = Color(0x40888888)
-                    )
-
-                    val mediaShape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
-                    var mediaBackgroundColor by remember {
-                        mutableStateOf(
-                            if (darkModeLocal) Color(
-                                0xFF1C1C1E
-                            ) else Color(0xFFFFFFFF)
-                        )
-                    }
-                    val mediaAnimatedBackgroundColor by animateColorAsState(
-                        targetValue = mediaBackgroundColor,
-                        animationSpec = tween(durationMillis = 500)
-                    )
-
-                    Row(
-                        modifier = Modifier
-                            .height(48.dp)
-                            .fillMaxWidth()
-                            .background(mediaAnimatedBackgroundColor, mediaShape)
-                            .pointerInput(Unit) {
-                                detectTapGestures(
-                                    onPress = {
-                                        mediaBackgroundColor =
-                                            if (darkModeLocal) Color(0x40888888) else Color(0x40D9D9D9)
-                                        tryAwaitRelease()
-                                        mediaBackgroundColor =
-                                            if (darkModeLocal) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)
-                                        mediaEQEnabled.value = !mediaEQEnabled.value
-                                    }
-                                )
-                            }
-                            .padding(horizontal = 16.dp),
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        Text(
-                            stringResource(R.string.media),
-                            fontSize = 16.sp,
-                            color = textColor,
-                            fontFamily = FontFamily(Font(R.font.sf_pro)),
-                            modifier = Modifier.weight(1f)
-                        )
-                        Checkbox(
-                            checked = mediaEQEnabled.value,
-                            onCheckedChange = { mediaEQEnabled.value = it },
-                            colors = CheckboxDefaults.colors().copy(
-                                checkedCheckmarkColor = Color(0xFF007AFF),
-                                uncheckedCheckmarkColor = Color.Transparent,
-                                checkedBoxColor = Color.Transparent,
-                                uncheckedBoxColor = Color.Transparent,
-                                checkedBorderColor = Color.Transparent,
-                                uncheckedBorderColor = Color.Transparent
-                            ),
-                            modifier = Modifier
-                                .height(24.dp)
-                                .scale(1.5f)
-                        )
-                    }
-                }
+//                Text(
+//                    text = stringResource(R.string.apply_eq_to),
+//                    style = TextStyle(
+//                        fontSize = 14.sp,
+//                        fontWeight = FontWeight.Bold,
+//                        color = textColor.copy(alpha = 0.6f),
+//                        fontFamily = FontFamily(Font(R.font.sf_pro))
+//                    ),
+//                    modifier = Modifier.padding(8.dp, bottom = 0.dp)
+//                )
+//                Column(
+//                    modifier = Modifier
+//                        .fillMaxWidth()
+//                        .background(backgroundColor, RoundedCornerShape(28.dp))
+//                        .padding(vertical = 0.dp)
+//                ) {
+//                    val darkModeLocal = isSystemInDarkTheme()
+//
+//                    val phoneShape = RoundedCornerShape(topStart = 28.dp, topEnd = 28.dp)
+//                    var phoneBackgroundColor by remember {
+//                        mutableStateOf(
+//                            if (darkModeLocal) Color(
+//                                0xFF1C1C1E
+//                            ) else Color(0xFFFFFFFF)
+//                        )
+//                    }
+//                    val phoneAnimatedBackgroundColor by animateColorAsState(
+//                        targetValue = phoneBackgroundColor,
+//                        animationSpec = tween(durationMillis = 500)
+//                    )
+//
+//                    Row(
+//                        modifier = Modifier
+//                            .height(48.dp)
+//                            .fillMaxWidth()
+//                            .background(phoneAnimatedBackgroundColor, phoneShape)
+//                            .pointerInput(Unit) {
+//                                detectTapGestures(
+//                                    onPress = {
+//                                        phoneBackgroundColor =
+//                                            if (darkModeLocal) Color(0x40888888) else Color(0x40D9D9D9)
+//                                        tryAwaitRelease()
+//                                        phoneBackgroundColor =
+//                                            if (darkModeLocal) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)
+//                                        phoneEQEnabled.value = !phoneEQEnabled.value
+//                                    }
+//                                )
+//                            }
+//                            .padding(horizontal = 16.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Text(
+//                            stringResource(R.string.phone),
+//                            fontSize = 16.sp,
+//                            color = textColor,
+//                            fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                            modifier = Modifier.weight(1f)
+//                        )
+//                        Checkbox(
+//                            checked = phoneEQEnabled.value,
+//                            onCheckedChange = { phoneEQEnabled.value = it },
+//                            colors = CheckboxDefaults.colors().copy(
+//                                checkedCheckmarkColor = Color(0xFF007AFF),
+//                                uncheckedCheckmarkColor = Color.Transparent,
+//                                checkedBoxColor = Color.Transparent,
+//                                uncheckedBoxColor = Color.Transparent,
+//                                checkedBorderColor = Color.Transparent,
+//                                uncheckedBorderColor = Color.Transparent
+//                            ),
+//                            modifier = Modifier
+//                                .height(24.dp)
+//                                .scale(1.5f)
+//                        )
+//                    }
+//
+//                    HorizontalDivider(
+//                        thickness = 1.dp,
+//                        color = Color(0x40888888)
+//                    )
+//
+//                    val mediaShape = RoundedCornerShape(bottomStart = 28.dp, bottomEnd = 28.dp)
+//                    var mediaBackgroundColor by remember {
+//                        mutableStateOf(
+//                            if (darkModeLocal) Color(
+//                                0xFF1C1C1E
+//                            ) else Color(0xFFFFFFFF)
+//                        )
+//                    }
+//                    val mediaAnimatedBackgroundColor by animateColorAsState(
+//                        targetValue = mediaBackgroundColor,
+//                        animationSpec = tween(durationMillis = 500)
+//                    )
+//
+//                    Row(
+//                        modifier = Modifier
+//                            .height(48.dp)
+//                            .fillMaxWidth()
+//                            .background(mediaAnimatedBackgroundColor, mediaShape)
+//                            .pointerInput(Unit) {
+//                                detectTapGestures(
+//                                    onPress = {
+//                                        mediaBackgroundColor =
+//                                            if (darkModeLocal) Color(0x40888888) else Color(0x40D9D9D9)
+//                                        tryAwaitRelease()
+//                                        mediaBackgroundColor =
+//                                            if (darkModeLocal) Color(0xFF1C1C1E) else Color(0xFFFFFFFF)
+//                                        mediaEQEnabled.value = !mediaEQEnabled.value
+//                                    }
+//                                )
+//                            }
+//                            .padding(horizontal = 16.dp),
+//                        verticalAlignment = Alignment.CenterVertically
+//                    ) {
+//                        Text(
+//                            stringResource(R.string.media),
+//                            fontSize = 16.sp,
+//                            color = textColor,
+//                            fontFamily = FontFamily(Font(R.font.sf_pro)),
+//                            modifier = Modifier.weight(1f)
+//                        )
+//                        Checkbox(
+//                            checked = mediaEQEnabled.value,
+//                            onCheckedChange = { mediaEQEnabled.value = it },
+//                            colors = CheckboxDefaults.colors().copy(
+//                                checkedCheckmarkColor = Color(0xFF007AFF),
+//                                uncheckedCheckmarkColor = Color.Transparent,
+//                                checkedBoxColor = Color.Transparent,
+//                                uncheckedBoxColor = Color.Transparent,
+//                                checkedBorderColor = Color.Transparent,
+//                                uncheckedBorderColor = Color.Transparent
+//                            ),
+//                            modifier = Modifier
+//                                .height(24.dp)
+//                                .scale(1.5f)
+//                        )
+//                    }
+//                }
 
                 // EQ Settings. Don't seem to have an effect?
                 // Column(
